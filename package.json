@@ -1,0 +1,15 @@
+{
+  "name": "toolkit",
+  "version": "0.0.1",
+  "description": "A toolkit for interacting with smart contracts",
+  "main": "app.js",
+  "keywords": [],
+  "author": "PhatJay - For TheCryptoFarm",
+  "repository": "https://github.com/TheCryptoFarm/toolkit",
+  "license": "MIT",
+  "dependencies": {
+    "command-line-args": "^5.1.1",
+    "command-line-usage": "^6.1.1",
+    "ethers": "^5.2.0"
+  }
+}
