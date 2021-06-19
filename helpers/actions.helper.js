@@ -2,9 +2,9 @@
 const ethers = require("ethers");
 
 //mainnet
-//const wbnb = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const wbnb = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 //testnet
-const wbnb = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
+//const wbnb = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
 
 class ActionHelper {
   constructor() {
