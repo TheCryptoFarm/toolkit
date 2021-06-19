@@ -2,9 +2,9 @@
 const ethers = require("ethers");
 
 //mainnet
-const wbnb = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+//const wbnb = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 //testnet
-//const wbnb = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
+const wbnb = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
 
 class ActionHelper {
   constructor() {
@@ -48,7 +48,6 @@ class ActionHelper {
 
   buy(action) {
     return new Promise(async (resolve) => {
-      console.log(action);
       const router = new ethers.Contract(
         action.router,
         [
@@ -80,6 +79,38 @@ class ActionHelper {
     });
   }
 
+  balance() {
+    return new Promise(async (resolve) => {
+      const balance = await this.provider.getBalance(process.env.RECIPIENT);
+      console.log("Balance: " + ethers.utils.formatEther(balance) + " BNB");
+      resolve();
+    });
+  }
+
+  tokenBalance(action) {
+    return new Promise(async (resolve) => {
+      const contract = new ethers.Contract(
+        action.token,
+        [
+          "function name() external pure returns (string memory)",
+          "function balanceOf(address account) external view returns (uint256)",
+          "function decimals() view returns (uint8)",
+        ],
+        this.account
+      );
+      const name = await contract.name();
+      const balance = await contract.balanceOf(process.env.RECIPIENT);
+      const decimals = await contract.decimals();
+      console.log(
+        "Token Balance: " +
+          ethers.utils.formatUnits(balance, decimals) +
+          " " +
+          name
+      );
+      resolve();
+    });
+  }
+
   sell(action) {
     return new Promise(async (resolve) => {
       await this.approve(action);
@@ -95,19 +126,20 @@ class ActionHelper {
         action.router,
         [
           "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)",
-          "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable",
+          "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external",
         ],
         this.account
       );
-      const balance = await contract.balanceOf(process.env.RECIPIENT);
       const decimals = await contract.decimals();
-
-      const sellAmount = ethers.utils.parseUnits(balance, decimals);
+      const sellAmount = ethers.utils.parseUnits(
+        action.sellAmount,
+        decimals.toString()
+      );
       const amounts = await router.getAmountsOut(sellAmount, [
         action.token,
         wbnb,
       ]);
-      const amountOutMin = amounts[1].sub(amounts[1].div(slippage));
+      const amountOutMin = amounts[1].div(action.slippage);
       const tx = await router.swapExactTokensForETH(
         sellAmount,
         amountOutMin,
@@ -115,8 +147,8 @@ class ActionHelper {
         process.env.RECIPIENT,
         Date.now() + 1000 * action.deadline,
         {
-          gasLimit: process.env.gasLimit,
-          gasPrice: ethers.utils.parseUnits(process.env.gasPrice, "gwei"),
+          gasLimit: action.gasLimit,
+          gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
         }
       );
       console.log("Waiting for Reciept...");

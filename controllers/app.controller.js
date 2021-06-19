@@ -27,6 +27,7 @@ class AppController {
         defaultValue: "345684",
       },
       { name: "gasPrice", defaultValue: "10" },
+      { name: "slippage", defaultValue: "1" },
       { name: "deadline", defaultValue: "120" },
       {
         name: "purchaseAmount",
@@ -47,18 +48,11 @@ class AppController {
       task: task.command,
       options: options,
     };
-    switch (action.task) {
-      case "approve":
-        await actions.approve(action.options);
-        break;
-      case "buy":
-        await actions.buy(action.options);
-        break;
-      case "sell":
-        await actions.sell(action.options);
-        break;
-      default:
-        throw "Unknown action\n\n";
+
+    try {
+      await actions[action.task](action.options);
+    } catch {
+      throw "Unknown action\n\n";
     }
   }
 
