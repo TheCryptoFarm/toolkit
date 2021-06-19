@@ -23,9 +23,14 @@ const sections = [
         description: "Router contract to interact with [defaults to PCSv2]",
       },
       {
+        name: "factory",
+        typeLabel: "{underline string}",
+        description: "Factory contract to interact with [defaults to PCS]",
+      },
+      {
         name: "gasLimit",
         typeLabel: "{underline integer}",
-        description: "Gas limit to use [defaults to 345684]",
+        description: "Gas limit to use [defaults to 500000]",
       },
       {
         name: "gasPrice",
@@ -79,6 +84,14 @@ const sections = [
       {
         name: "balance",
         summary: "Balace of BNB in wallet",
+      },
+      {
+        name: "getPair",
+        summary: "Get Pancake Pair contract from [token]",
+      },
+      {
+        name: "getReserves",
+        summary: "Get Reserves for [token]",
       },
       {
         name: "sell",

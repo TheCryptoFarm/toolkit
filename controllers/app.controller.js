@@ -23,8 +23,12 @@ class AppController {
         defaultValue: "0x10ED43C718714eb63d5aA57B78B54704E256024E",
       },
       {
+        name: "factory",
+        defaultValue: "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+      },
+      {
         name: "gasLimit",
-        defaultValue: "345684",
+        defaultValue: "500000",
       },
       { name: "gasPrice", defaultValue: "10" },
       { name: "slippage", defaultValue: "1" },
@@ -57,7 +61,7 @@ class AppController {
   }
 
   shutdown() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       resolve();
     });
   }

@@ -16,7 +16,7 @@ class ActionHelper {
   }
 
   approve(action) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       const contract = new ethers.Contract(
         action.token,
         [
@@ -87,6 +87,44 @@ class ActionHelper {
     });
   }
 
+  getPair(action) {
+    return new Promise(async (resolve) => {
+      const factory = new ethers.Contract(
+        action.factory,
+        [
+          "function getPair(address tokenA, address tokenB) external view returns (address pair)",
+        ],
+        this.account
+      );
+      const pairAddress = await factory.getPair(wbnb, action.token);
+      console.log("pairAddress: " + pairAddress);
+      resolve();
+    });
+  }
+
+  getReserves(action) {
+    return new Promise(async (resolve) => {
+      const factory = new ethers.Contract(
+        action.factory,
+        [
+          "function getPair(address tokenA, address tokenB) external view returns (address pair)",
+        ],
+        this.account
+      );
+      const pairAddress = await factory.getPair(wbnb, action.token);
+      const pairContract = new ethers.Contract(
+        pairAddress,
+        [
+          "function getReserves() external view returns (uint112 reserve0, uint112 reserve1, uint32 blockTimestampLast)",
+        ],
+        this.account
+      );
+      const reserves = await pairContract.getReserves();
+      console.log("Reserves: " + reserves);
+      resolve();
+    });
+  }
+
   tokenBalance(action) {
     return new Promise(async (resolve) => {
       const contract = new ethers.Contract(
@@ -139,7 +177,7 @@ class ActionHelper {
         action.token,
         wbnb,
       ]);
-      const amountOutMin = amounts[1].div(action.slippage);
+      const amountOutMin = amounts[1].sub(amounts[1].div(action.slippage));
       const tx = await router.swapExactTokensForETH(
         sellAmount,
         amountOutMin,
