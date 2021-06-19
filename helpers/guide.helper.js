@@ -77,8 +77,16 @@ const sections = [
         summary: "Buy tokens using [router]",
       },
       {
+        name: "balance",
+        summary: "Balace of BNB in wallet",
+      },
+      {
         name: "sell",
         summary: "Sell tokens using [router]",
+      },
+      {
+        name: "tokenBalance",
+        summary: "Balace of [token] in wallet",
       },
       {
         name: "txpool",
