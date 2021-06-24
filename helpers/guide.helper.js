@@ -5,6 +5,9 @@ const sections = [
     content: "A toolkit for interacting with smart contracts",
   },
   {
+    content: "Usage: node app COMMAND [OPTIONS]",
+  },
+  {
     header: "Options",
     optionList: [
       {
@@ -16,6 +19,11 @@ const sections = [
         name: "token",
         typeLabel: "{underline string}",
         description: "Token contract address to interact with",
+      },
+      {
+        name: "wbnb",
+        typeLabel: "{underline string}",
+        description: "WBNB Token contract to interact with [defaults to mainnet contract]",
       },
       {
         name: "router",
@@ -99,7 +107,7 @@ const sections = [
       },
       {
         name: "tokenBalance",
-        summary: "Balace of [token] in wallet",
+        summary: "Balance of [token] in wallet",
       },
       {
         name: "txpool",

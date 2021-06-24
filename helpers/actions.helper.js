@@ -1,11 +1,6 @@
 "use strict";
 const ethers = require("ethers");
 
-//mainnet
-const wbnb = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
-//testnet
-//const wbnb = "0xae13d989dac2f0debff460ac112a837c89baa7cd";
-
 class ActionHelper {
   constructor() {
     this.provider = new ethers.providers.WebSocketProvider(
@@ -63,7 +58,7 @@ class ActionHelper {
       const amountOutMin = 0;
       const tx = await router.swapExactETHForTokens(
         amountOutMin,
-        [wbnb, action.token],
+        [action.wbnb, action.token],
         process.env.RECIPIENT,
         Date.now() + 1000 * action.deadline,
         {
@@ -96,7 +91,7 @@ class ActionHelper {
         ],
         this.account
       );
-      const pairAddress = await factory.getPair(wbnb, action.token);
+      const pairAddress = await factory.getPair(action.wbnb, action.token);
       console.log("pairAddress: " + pairAddress);
       resolve();
     });
@@ -111,7 +106,7 @@ class ActionHelper {
         ],
         this.account
       );
-      const pairAddress = await factory.getPair(wbnb, action.token);
+      const pairAddress = await factory.getPair(action.wbnb, action.token);
       const pairContract = new ethers.Contract(
         pairAddress,
         [
@@ -175,13 +170,13 @@ class ActionHelper {
       );
       const amounts = await router.getAmountsOut(sellAmount, [
         action.token,
-        wbnb,
+        action.wbnb,
       ]);
       const amountOutMin = amounts[1].sub(amounts[1].div(action.slippage));
       const tx = await router.swapExactTokensForETH(
         sellAmount,
         amountOutMin,
-        [action.token, wbnb],
+        [action.token, action.wbnb],
         process.env.RECIPIENT,
         Date.now() + 1000 * action.deadline,
         {
