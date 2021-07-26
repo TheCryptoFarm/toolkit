@@ -8,17 +8,28 @@ class ActionHelper {
     );
     this.wallet = new ethers.Wallet(process.env.PRIVATE_KEY);
     this.account = this.wallet.connect(this.provider);
+    this.erc20ABI = [
+      "function allowance(address owner, address spender) external view returns (uint)",
+      "function approve(address _spender, uint256 _value) public returns (bool success)",
+      "function name() external pure returns (string memory)",
+      "function balanceOf(address account) external view returns (uint256)",
+      "function decimals() view returns (uint8)",
+    ];
+    this.routerABI = [
+      "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)",
+      "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable",
+      "function swapExactTokensForETHSupportingFeeOnTransferTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external",
+    ];
+    this.factoryABI = [
+      "function getPair(address tokenA, address tokenB) external view returns (address pair)",
+    ];
   }
 
   approve(action) {
     return new Promise(async (resolve) => {
       const contract = new ethers.Contract(
         action.token,
-        [
-          "function allowance(address owner, address spender) external view returns (uint)",
-          "function approve(address _spender, uint256 _value) public returns (bool success)",
-          "function name() external pure returns (string memory)",
-        ],
+        this.erc20ABI,
         this.account
       );
       const tokenName = await contract.name();
@@ -45,10 +56,7 @@ class ActionHelper {
     return new Promise(async (resolve) => {
       const router = new ethers.Contract(
         action.router,
-        [
-          "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)",
-          "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable",
-        ],
+        this.routerABI,
         this.account
       );
       const purchaseAmount = ethers.utils.parseUnits(
@@ -86,9 +94,7 @@ class ActionHelper {
     return new Promise(async (resolve) => {
       const factory = new ethers.Contract(
         action.factory,
-        [
-          "function getPair(address tokenA, address tokenB) external view returns (address pair)",
-        ],
+        this.factoryABI,
         this.account
       );
       const pairAddress = await factory.getPair(action.wbnb, action.token);
@@ -101,9 +107,7 @@ class ActionHelper {
     return new Promise(async (resolve) => {
       const factory = new ethers.Contract(
         action.factory,
-        [
-          "function getPair(address tokenA, address tokenB) external view returns (address pair)",
-        ],
+        this.factoryABI,
         this.account
       );
       const pairAddress = await factory.getPair(action.wbnb, action.token);
@@ -124,11 +128,7 @@ class ActionHelper {
     return new Promise(async (resolve) => {
       const contract = new ethers.Contract(
         action.token,
-        [
-          "function name() external pure returns (string memory)",
-          "function balanceOf(address account) external view returns (uint256)",
-          "function decimals() view returns (uint8)",
-        ],
+        this.erc20ABI,
         this.account
       );
       const name = await contract.name();
@@ -149,18 +149,12 @@ class ActionHelper {
       await this.approve(action);
       const contract = new ethers.Contract(
         action.token,
-        [
-          "function balanceOf(address account) external view returns (uint256)",
-          "function decimals() view returns (uint8)",
-        ],
+        this.erc20ABI,
         this.account
       );
       const router = new ethers.Contract(
         action.router,
-        [
-          "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)",
-          "function swapExactTokensForETH(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external",
-        ],
+        this.routerABI,
         this.account
       );
       const decimals = await contract.decimals();
@@ -173,17 +167,18 @@ class ActionHelper {
         action.wbnb,
       ]);
       const amountOutMin = amounts[1].sub(amounts[1].div(action.slippage));
-      const tx = await router.swapExactTokensForETH(
-        sellAmount,
-        amountOutMin,
-        [action.token, action.wbnb],
-        process.env.RECIPIENT,
-        Date.now() + 1000 * action.deadline,
-        {
-          gasLimit: action.gasLimit,
-          gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
-        }
-      );
+      const tx =
+        await router.swapExactTokensForETHSupportingFeeOnTransferTokens(
+          sellAmount,
+          amountOutMin,
+          [action.token, action.wbnb],
+          process.env.RECIPIENT,
+          Date.now() + 1000 * action.deadline,
+          {
+            gasLimit: action.gasLimit,
+            gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
+          }
+        );
       console.log("Waiting for Reciept...");
       const receipt = await tx.wait();
       console.log("Your txHash: " + receipt.transactionHash);

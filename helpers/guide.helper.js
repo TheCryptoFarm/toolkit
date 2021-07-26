@@ -23,7 +23,8 @@ const sections = [
       {
         name: "wbnb",
         typeLabel: "{underline string}",
-        description: "WBNB Token contract to interact with [defaults to mainnet contract]",
+        description:
+          "WBNB Token contract to interact with [defaults to mainnet contract]",
       },
       {
         name: "router",
@@ -69,12 +70,12 @@ const sections = [
       {
         name: "sellDelay",
         typeLabel: "{underline integer}",
-        description: "Delay (in ms) to add before selling (EXPERT)",
+        description: "SOON: Delay (in ms) to add before selling (EXPERT)",
       },
       {
         name: "sellPercent",
         typeLabel: "{underline integer}",
-        description: "Percentage of [token] to sell (EXPERT)",
+        description: "SOON: Percentage of [token] to sell (EXPERT)",
       },
     ],
   },
