@@ -17,7 +17,7 @@ class ActionHelper {
     ];
     this.routerABI = [
       "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)",
-      "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable",
+      "function swapExactETHForTokensSupportingFeeOnTransferTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable",
       "function swapExactTokensForETHSupportingFeeOnTransferTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external",
     ];
     this.factoryABI = [
@@ -64,17 +64,18 @@ class ActionHelper {
         "ether"
       ); // buy in BNB
       const amountOutMin = 0;
-      const tx = await router.swapExactETHForTokens(
-        amountOutMin,
-        [action.wbnb, action.token],
-        process.env.RECIPIENT,
-        Date.now() + 1000 * action.deadline,
-        {
-          value: purchaseAmount,
-          gasLimit: action.gasLimit,
-          gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
-        }
-      );
+      const tx =
+        await router.swapExactETHForTokensSupportingFeeOnTransferTokens(
+          amountOutMin,
+          [action.wbnb, action.token],
+          process.env.RECIPIENT,
+          Date.now() + 1000 * action.deadline,
+          {
+            value: purchaseAmount,
+            gasLimit: action.gasLimit,
+            gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
+          }
+        );
       console.log("Waiting for Reciept...");
       const receipt = await tx.wait();
       console.log("Your txHash: " + receipt.transactionHash);
