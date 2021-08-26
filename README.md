@@ -4,7 +4,7 @@
 
 Usage: node app COMMAND [OPTIONS]
 
-Options
+## Options
 
 - --env file JSON file to use `[defaults to env.json]`
 - --token string Token contract address to interact with  
@@ -22,16 +22,31 @@ Options
 - --sellDelay integer SOON: Delay (in ms) to add before selling (EXPERT)  
 - --sellPercent integer SOON: Percentage of `[token]` to sell (EXPERT)
 
-**Command List**
+## Command List
 
-- approve Approve your Tokens for sale on `[router]`
-- buy Buy tokens using `[router]` 
-- sell Sell tokens using `[router]`  
-- balance Balance of BNB in wallet  
-- tokenBalance Balance of `[token]` in wallet  
-- deposit Wrap BNB  
-- withdraw UnWrap BNB  
-- getPair Get Pancake Pair contract from `[token]`
-- getReserves Get Reserves for [token]`
-- txpool SOON: EXPERT: Snipe direct liquidity events using `[router]`
-- dxsale SOON: ELITE: Snipe dxSale finalizations
+- **approve** - Approve your Tokens for sale on `[router]`
+- **buy** - Buy tokens using `[router]` 
+- **sell** - Sell tokens using `[router]`  
+- **balance** - Balance of BNB in wallet  
+- **tokenBalance** - Balance of `[token]` in wallet  
+- **deposit** - Wrap BNB  
+- **withdraw** - UnWrap BNB  
+- **getPair** - Get Pancake Pair contract from `[token]`
+- **getReserves** - Get Reserves for [token]`
+- **txpool** - SOON: EXPERT: Snipe direct liquidity events using `[router]`
+- **dxsale** - SOON: ELITE: Snipe dxSale finalizations
+
+
+## Examples
+
+**Buy 0.1 BNB Worth of CAKE**
+
+` $ node app buy --token 0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82 --purchaseAmount 0.1`
+
+**Sell 10 CAKE for BNB**
+
+` $ node app sell --token 0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82 --sellAmount 10`
+
+**Wrap 0.1 BNB using WBNB Contract**
+
+` $ node app deposit --depositAmount 0.1`
