@@ -39,12 +39,12 @@ const sections = [
       {
         name: "gasLimit",
         typeLabel: "{underline integer}",
-        description: "Gas limit to use [defaults to 500000]",
+        description: "Gas limit to use [defaults to 2,000,000]",
       },
       {
         name: "gasPrice",
         typeLabel: "{underline integer}",
-        description: "Gas Price to use [defaults to 10]",
+        description: "Gas Price to use [defaults to 7]",
       },
       {
         name: "deadline",
@@ -56,6 +56,16 @@ const sections = [
         name: "slippage",
         typeLabel: "{underline integer}",
         description: "Slippage to use (percentage) [defaults to 1]",
+      },
+      {
+        name: "depositAmount",
+        typeLabel: "{underline float}",
+        description: "Amount of BNB to Wrap",
+      },
+      {
+        name: "withdrawAmount",
+        typeLabel: "{underline float}",
+        description: "Amount of BNB to Unrwap",
       },
       {
         name: "purchaseAmount",
@@ -91,8 +101,24 @@ const sections = [
         summary: "Buy tokens using [router]",
       },
       {
+        name: "sell",
+        summary: "Sell tokens using [router]",
+      },
+      {
         name: "balance",
-        summary: "Balace of BNB in wallet",
+        summary: "Balance of BNB in wallet",
+      },
+      {
+        name: "tokenBalance",
+        summary: "Balance of [token] in wallet",
+      },
+      {
+        name: "deposit",
+        summary: "Wrap BNB",
+      },
+      {
+        name: "withdraw",
+        summary: "UnWrap BNB",
       },
       {
         name: "getPair",
@@ -101,14 +127,6 @@ const sections = [
       {
         name: "getReserves",
         summary: "Get Reserves for [token]",
-      },
-      {
-        name: "sell",
-        summary: "Sell tokens using [router]",
-      },
-      {
-        name: "tokenBalance",
-        summary: "Balance of [token] in wallet",
       },
       {
         name: "txpool",

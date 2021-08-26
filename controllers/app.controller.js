@@ -34,19 +34,15 @@ class AppController {
         name: "gasLimit",
         defaultValue: "2000000",
       },
-      { name: "gasPrice", defaultValue: "10" },
+      { name: "gasPrice", defaultValue: "6" },
       { name: "slippage", defaultValue: "1" },
       { name: "deadline", defaultValue: "120" },
-      {
-        name: "purchaseAmount",
-      },
-      {
-        name: "sellAmount",
-      },
+      { name: "depositAmount" },
+      { name: "withdrawAmount" },
+      { name: "purchaseAmount" },
+      { name: "sellAmount" },
       { name: "sellDelay" },
-      {
-        name: "sellPercentage",
-      },
+      { name: "sellPercentage" },
     ];
     const options = commandLineArgs(optionsDefs, {
       argv,

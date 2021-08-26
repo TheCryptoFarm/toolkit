@@ -12,12 +12,17 @@ class ActionHelper {
       "function allowance(address owner, address spender) external view returns (uint)",
       "function approve(address _spender, uint256 _value) public returns (bool success)",
       "function name() external pure returns (string memory)",
+      "function symbol() external view returns (string memory)",
       "function balanceOf(address account) external view returns (uint256)",
       "function decimals() view returns (uint8)",
     ];
+    this.wbnbABI = [
+      "function deposit() public payable",
+      "function withdraw(uint wad) public",
+    ];
     this.routerABI = [
       "function getAmountsOut(uint amountIn, address[] memory path) public view returns (uint[] memory amounts)",
-      "function swapExactETHForTokensSupportingFeeOnTransferTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable",
+      "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline) external payable",
       "function swapExactTokensForETHSupportingFeeOnTransferTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) external",
     ];
     this.factoryABI = [
@@ -42,13 +47,13 @@ class ActionHelper {
           action.router,
           ethers.constants.MaxUint256
         );
-        const receipt = await tx.wait();
         console.log("Approved " + tokenName + " for sale");
-        console.log("Your txHash: " + receipt.transactionHash);
+        console.log("Your txHash: " + tx.hash);
+        resolve(tx.hash);
       } else {
         console.log(tokenName + " already approved for sale");
+        resolve(1);
       }
-      resolve();
     });
   }
 
@@ -63,23 +68,24 @@ class ActionHelper {
         action.purchaseAmount,
         "ether"
       ); // buy in BNB
-      const amountOutMin = 0;
-      const tx =
-        await router.swapExactETHForTokensSupportingFeeOnTransferTokens(
-          amountOutMin,
-          [action.wbnb, action.token],
-          process.env.RECIPIENT,
-          Date.now() + 1000 * action.deadline,
-          {
-            value: purchaseAmount,
-            gasLimit: action.gasLimit,
-            gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
-          }
-        );
-      console.log("Waiting for Reciept...");
-      const receipt = await tx.wait();
-      console.log("Your txHash: " + receipt.transactionHash);
-      resolve();
+      const amounts = await router.getAmountsOut(purchaseAmount, [
+        action.wbnb,
+        action.token,
+      ]);
+      const amountOutMin = amounts[1].sub(amounts[1].div(action.slippage));
+      const tx = await router.swapExactETHForTokens(
+        amountOutMin,
+        [action.wbnb, action.token],
+        process.env.RECIPIENT,
+        Date.now() + 1000 * action.deadline,
+        {
+          value: purchaseAmount,
+          gasLimit: action.gasLimit,
+          gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
+        }
+      );
+      console.log("Your Buy txHash: " + tx.hash);
+      resolve(tx.hash);
     });
   }
 
@@ -87,7 +93,20 @@ class ActionHelper {
     return new Promise(async (resolve) => {
       const balance = await this.provider.getBalance(process.env.RECIPIENT);
       console.log("Balance: " + ethers.utils.formatEther(balance) + " BNB");
-      resolve();
+      resolve(balance);
+    });
+  }
+
+  deposit(action) {
+    return new Promise(async (resolve) => {
+      const wbnb = new ethers.Contract(action.wbnb, this.wbnbABI, this.account);
+      const tx = await wbnb.deposit({
+        value: action.depositAmount,
+        gasLimit: action.gasLimit,
+        gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
+      });
+      console.log("Your Deposit txHash: " + tx.hash);
+      resolve(tx.hash);
     });
   }
 
@@ -100,7 +119,7 @@ class ActionHelper {
       );
       const pairAddress = await factory.getPair(action.wbnb, action.token);
       console.log("pairAddress: " + pairAddress);
-      resolve();
+      resolve(pairAddress);
     });
   }
 
@@ -121,7 +140,7 @@ class ActionHelper {
       );
       const reserves = await pairContract.getReserves();
       console.log("Reserves: " + reserves);
-      resolve();
+      resolve(reserves);
     });
   }
 
@@ -133,15 +152,19 @@ class ActionHelper {
         this.account
       );
       const name = await contract.name();
+      const symbol = await contract.symbol();
       const balance = await contract.balanceOf(process.env.RECIPIENT);
       const decimals = await contract.decimals();
+      console.log("Token " + name);
       console.log(
-        "Token Balance: " +
-          ethers.utils.formatUnits(balance, decimals) +
-          " " +
-          name
+        "Balance: " + ethers.utils.formatUnits(balance, decimals) + " " + symbol
       );
-      resolve();
+      resolve({
+        name: name,
+        balance: balance,
+        decimals: decimals,
+        symbol: symbol,
+      });
     });
   }
 
@@ -180,10 +203,20 @@ class ActionHelper {
             gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
           }
         );
-      console.log("Waiting for Reciept...");
-      const receipt = await tx.wait();
-      console.log("Your txHash: " + receipt.transactionHash);
-      resolve();
+      console.log("Your Sell txHash: " + tx.hash);
+      resolve(tx.hash);
+    });
+  }
+
+  withdraw(action) {
+    return new Promise(async (resolve) => {
+      const wbnb = new ethers.Contract(action.wbnb, this.wbnbABI, this.account);
+      const tx = await wbnb.withdraw(account.withdrawAmount, {
+        gasLimit: action.gasLimit,
+        gasPrice: ethers.utils.parseUnits(action.gasPrice, "gwei"),
+      });
+      console.log("Your Withdraw txHash: " + tx.hash);
+      resolve(tx.hash);
     });
   }
 }
