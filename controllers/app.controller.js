@@ -32,7 +32,7 @@ class AppController {
       },
       {
         name: "gasLimit",
-        defaultValue: "500000",
+        defaultValue: "2000000",
       },
       { name: "gasPrice", defaultValue: "10" },
       { name: "slippage", defaultValue: "1" },
