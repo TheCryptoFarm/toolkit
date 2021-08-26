@@ -2,7 +2,7 @@
 
 **A toolkit for interacting with smart contracts**
 
-## Usage: node app COMMAND [OPTIONS]
+Usage: node app COMMAND [OPTIONS]
 
 Options
 
