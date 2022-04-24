@@ -50,3 +50,6 @@ Usage: node app COMMAND [OPTIONS]
 **Wrap 0.1 BNB using WBNB Contract**
 
 ` $ node app deposit --depositAmount 0.1`
+
+
+Join us on Discord https://discord.gg/H582fcrrvG
